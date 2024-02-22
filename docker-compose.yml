@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  # Сервис Tomcat для развертывания приложения
+  tomcat:
+    # Используем образ Tomcat
+    image: tomcat:latest
+    # Пробрасываем порт 8080 для доступа к приложению
+    ports:
+      - "8090:8080"  # Используем порт 8090 на хосте, чтобы обращаться к порту 8080 в контейнере
+    # Монтируем war-файл в директорию Tomcat webapps
+    volumes:
+      - ./target/FGT-1.0-SNAPSHOT.war:/usr/local/tomcat/webapps/FGT.war
+    # Указываем зависимость от контейнера с базой данных
+    depends_on:
+      - db
+
+  # Сервис базы данных PostgreSQL
+  db:
+    # Используем образ PostgreSQL
+    image: postgres
+    # Перезапускаем контейнер всегда при остановке
+    restart: always
+    # Передаем переменные окружения для настройки базы данных
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db_name  # Название базы данных
+    # Пробрасываем порт 5432 для доступа к базе данных
+    ports:
+      - "5432:5432"
